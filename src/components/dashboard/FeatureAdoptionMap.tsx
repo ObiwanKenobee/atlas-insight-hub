@@ -1,24 +1,120 @@
-import { Shield, ArrowLeftRight, FlaskConical, Database, BarChart3 } from "lucide-react";
+import { useState } from "react";
+import { Shield, ArrowLeftRight, FlaskConical, Database, BarChart3, TrendingUp, Users, Clock } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import DrillDownPanel from "./DrillDownPanel";
 
 const features = [
-  { name: "Impact Verification Engine", icon: Shield, users: 1284, adoption: 82, growth: 12.4 },
-  { name: "Regenerative Asset Exchange", icon: ArrowLeftRight, users: 946, adoption: 61, growth: 8.7 },
-  { name: "Policy Simulation Engine", icon: FlaskConical, users: 734, adoption: 47, growth: 22.1 },
-  { name: "Data Integration Tools", icon: Database, users: 1102, adoption: 71, growth: 5.3 },
-  { name: "Impact Reporting & Viz", icon: BarChart3, users: 856, adoption: 55, growth: 15.8 },
+  {
+    name: "Impact Verification Engine", icon: Shield, users: 1284, adoption: 82, growth: 12.4,
+    drilldown: {
+      dailyActive: [32, 45, 38, 52, 61, 48, 55],
+      avgSession: "24 min",
+      topAction: "Verify Asset",
+      retention: 78,
+    },
+  },
+  {
+    name: "Regenerative Asset Exchange", icon: ArrowLeftRight, users: 946, adoption: 61, growth: 8.7,
+    drilldown: {
+      dailyActive: [22, 28, 31, 35, 29, 33, 38],
+      avgSession: "18 min",
+      topAction: "List Asset",
+      retention: 64,
+    },
+  },
+  {
+    name: "Policy Simulation Engine", icon: FlaskConical, users: 734, adoption: 47, growth: 22.1,
+    drilldown: {
+      dailyActive: [12, 18, 22, 28, 35, 31, 42],
+      avgSession: "32 min",
+      topAction: "Run Simulation",
+      retention: 71,
+    },
+  },
+  {
+    name: "Data Integration Tools", icon: Database, users: 1102, adoption: 71, growth: 5.3,
+    drilldown: {
+      dailyActive: [48, 52, 45, 58, 62, 55, 51],
+      avgSession: "12 min",
+      topAction: "Connect Source",
+      retention: 85,
+    },
+  },
+  {
+    name: "Impact Reporting & Viz", icon: BarChart3, users: 856, adoption: 55, growth: 15.8,
+    drilldown: {
+      dailyActive: [25, 32, 28, 38, 42, 35, 40],
+      avgSession: "21 min",
+      topAction: "Generate Report",
+      retention: 69,
+    },
+  },
 ];
 
 const FeatureAdoptionMap = () => {
+  const [selectedFeature, setSelectedFeature] = useState<number | null>(null);
+  const selected = selectedFeature !== null ? features[selectedFeature] : null;
+
   return (
-    <div className="rounded-lg border border-border bg-card p-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-      <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-4">Feature Adoption Map</p>
+    <DrillDownPanel
+      title="Feature Adoption Map"
+      drillContent={
+        selected ? (
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <selected.icon className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">{selected.name}</span>
+            </div>
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="rounded-md bg-card p-3 border border-border">
+                <div className="flex items-center gap-1 mb-1">
+                  <Clock className="h-3 w-3 text-muted-foreground" />
+                  <p className="text-[10px] text-muted-foreground">Avg Session</p>
+                </div>
+                <p className="text-lg font-bold font-mono text-foreground">{selected.drilldown.avgSession}</p>
+              </div>
+              <div className="rounded-md bg-card p-3 border border-border">
+                <div className="flex items-center gap-1 mb-1">
+                  <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                  <p className="text-[10px] text-muted-foreground">Top Action</p>
+                </div>
+                <p className="text-sm font-bold font-mono text-primary">{selected.drilldown.topAction}</p>
+              </div>
+              <div className="rounded-md bg-card p-3 border border-border">
+                <div className="flex items-center gap-1 mb-1">
+                  <Users className="h-3 w-3 text-muted-foreground" />
+                  <p className="text-[10px] text-muted-foreground">7d Retention</p>
+                </div>
+                <p className="text-lg font-bold font-mono text-foreground">{selected.drilldown.retention}%</p>
+              </div>
+            </div>
+            <p className="text-[10px] font-mono text-muted-foreground mb-2">DAILY ACTIVE USERS (LAST 7 DAYS)</p>
+            <div className="h-20">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={selected.drilldown.dailyActive.map((v, i) => ({ day: ["M","T","W","T","F","S","S"][i], val: v }))}>
+                  <XAxis dataKey="day" tick={{ fontSize: 9, fill: 'hsl(220, 10%, 50%)' }} axisLine={false} tickLine={false} />
+                  <YAxis hide />
+                  <Bar dataKey="val" fill="hsl(160, 60%, 45%)" radius={[3, 3, 0, 0]} opacity={0.7} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">Click a feature tile above to see detailed analytics.</p>
+        )
+      }
+    >
       <div className="grid grid-cols-1 gap-3">
-        {features.map((f) => {
+        {features.map((f, idx) => {
           const intensity = f.adoption / 100;
+          const isSelected = selectedFeature === idx;
           return (
             <div
               key={f.name}
-              className="rounded-md border border-border p-4 transition-all hover:border-primary/40"
+              onClick={() => setSelectedFeature(isSelected ? null : idx)}
+              className={`rounded-md border p-4 transition-all cursor-pointer ${
+                isSelected ? "border-primary/60 ring-1 ring-primary/30" : "border-border hover:border-primary/40"
+              }`}
               style={{
                 background: `linear-gradient(135deg, hsl(160, 60%, 45%, ${intensity * 0.12}), hsl(170, 50%, 40%, ${intensity * 0.06}))`,
                 boxShadow: intensity > 0.6 ? `0 0 ${intensity * 20}px -8px hsl(160, 60%, 45%, ${intensity * 0.25})` : 'none',
@@ -41,7 +137,7 @@ const FeatureAdoptionMap = () => {
           );
         })}
       </div>
-    </div>
+    </DrillDownPanel>
   );
 };
 

@@ -1,5 +1,7 @@
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, AreaChart, Area } from "recharts";
 import { TreePine, Wind, Leaf, FileText } from "lucide-react";
+import DrillDownPanel from "./DrillDownPanel";
+import { useAnimatedNumber, useLiveData } from "@/hooks/use-animated-number";
 
 const impactData = [
   { month: "Sep", hectares: 12400, carbon: 3200, projects: 18, reports: 42 },
@@ -10,18 +12,45 @@ const impactData = [
   { month: "Feb", hectares: 31200, carbon: 8100, projects: 54, reports: 112 },
 ];
 
-const impactMetrics = [
-  { label: "Hectares Analyzed", value: "31.2K", icon: TreePine, color: "hsl(160, 60%, 45%)" },
-  { label: "Carbon Seq. (tCO₂)", value: "8,100", icon: Wind, color: "hsl(200, 70%, 50%)" },
-  { label: "Projects Verified", value: "54", icon: Leaf, color: "hsl(170, 50%, 40%)" },
-  { label: "Impact Reports", value: "112", icon: FileText, color: "hsl(35, 90%, 55%)" },
+const regionData = [
+  { region: "Amazon Basin", hectares: 8400, carbon: 2100 },
+  { region: "Congo Rainforest", hectares: 6200, carbon: 1800 },
+  { region: "Southeast Asia", hectares: 5100, carbon: 1400 },
+  { region: "European Rewilding", hectares: 4800, carbon: 1200 },
+  { region: "North America", hectares: 6700, carbon: 1600 },
 ];
 
 const EcosystemImpact = () => {
-  return (
-    <div className="rounded-lg border border-border bg-card p-6 animate-fade-in-up" style={{ animationDelay: '0.45s' }}>
-      <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-4">Ecosystem Impact Activity</p>
+  const liveHectares = useLiveData(31200, (prev) => prev + Math.round(Math.random() * 100), 6000);
+  const animHectares = useAnimatedNumber(liveHectares, 1000);
 
+  const impactMetrics = [
+    { label: "Hectares Analyzed", value: `${(animHectares / 1000).toFixed(1)}K`, icon: TreePine, color: "hsl(160, 60%, 45%)" },
+    { label: "Carbon Seq. (tCO₂)", value: "8,100", icon: Wind, color: "hsl(200, 70%, 50%)" },
+    { label: "Projects Verified", value: "54", icon: Leaf, color: "hsl(170, 50%, 40%)" },
+    { label: "Impact Reports", value: "112", icon: FileText, color: "hsl(35, 90%, 55%)" },
+  ];
+
+  return (
+    <DrillDownPanel
+      title="Ecosystem Impact Activity"
+      drillContent={
+        <div>
+          <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-3">Impact by Region</p>
+          <div className="space-y-2">
+            {regionData.map((r) => (
+              <div key={r.region} className="flex items-center gap-3">
+                <span className="text-xs text-secondary-foreground w-32 truncate">{r.region}</span>
+                <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${(r.hectares / 8400) * 100}%` }} />
+                </div>
+                <span className="text-[10px] font-mono text-muted-foreground w-20 text-right">{(r.hectares / 1000).toFixed(1)}K ha</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      }
+    >
       <div className="grid grid-cols-4 gap-3 mb-4">
         {impactMetrics.map((m) => (
           <div key={m.label} className="text-center">
@@ -31,21 +60,18 @@ const EcosystemImpact = () => {
           </div>
         ))}
       </div>
-
       <div className="h-36">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={impactData}>
             <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(220, 10%, 50%)' }} axisLine={false} tickLine={false} />
             <YAxis hide />
-            <Tooltip
-              contentStyle={{ background: 'hsl(220, 18%, 10%)', border: '1px solid hsl(220, 15%, 18%)', borderRadius: '8px', fontSize: 12 }}
-            />
+            <Tooltip contentStyle={{ background: 'hsl(220, 18%, 10%)', border: '1px solid hsl(220, 15%, 18%)', borderRadius: '8px', fontSize: 12 }} />
             <Line type="monotone" dataKey="hectares" stroke="hsl(160, 60%, 45%)" strokeWidth={2} dot={false} />
             <Line type="monotone" dataKey="carbon" stroke="hsl(200, 70%, 50%)" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </DrillDownPanel>
   );
 };
 

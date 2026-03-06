@@ -10,6 +10,15 @@ import EcosystemImpact from "@/components/dashboard/EcosystemImpact";
 import FeedbackLoop from "@/components/dashboard/FeedbackLoop";
 import FilterSidebar, { DashboardFilters } from "@/components/dashboard/FilterSidebar";
 
+const AnimatedSection = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
+  <section
+    className={`animate-fade-in-up opacity-0 ${className}`}
+    style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
+  >
+    {children}
+  </section>
+);
+
 const Index = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<DashboardFilters>({
@@ -41,27 +50,27 @@ const Index = () => {
       )}
 
       <main className="p-3 sm:p-6 max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <AnimatedSection delay={100} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2">
             <ActivationPanel />
           </div>
           <EngagementScore />
-        </section>
+        </AnimatedSection>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <AnimatedSection delay={250} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <FeatureAdoptionMap />
           <WorkflowTracker />
-        </section>
+        </AnimatedSection>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <AnimatedSection delay={400} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <DataActivityMonitor />
           <CohortAnalysis />
-        </section>
+        </AnimatedSection>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <AnimatedSection delay={550} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <EcosystemImpact />
           <FeedbackLoop />
-        </section>
+        </AnimatedSection>
       </main>
 
       <FilterSidebar

@@ -10,6 +10,15 @@ import EcosystemImpact from "@/components/dashboard/EcosystemImpact";
 import FeedbackLoop from "@/components/dashboard/FeedbackLoop";
 import FilterSidebar, { DashboardFilters } from "@/components/dashboard/FilterSidebar";
 
+const AnimatedSection = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
+  <section
+    className={`animate-fade-in-up opacity-0 ${className}`}
+    style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
+  >
+    {children}
+  </section>
+);
+
 const Index = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<DashboardFilters>({

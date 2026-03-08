@@ -11,6 +11,7 @@ import FeedbackLoop from "@/components/dashboard/FeedbackLoop";
 import FilterSidebar, { DashboardFilters } from "@/components/dashboard/FilterSidebar";
 import KeyboardShortcutsHelp from "@/components/dashboard/KeyboardShortcutsHelp";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { useRealtimeDashboard } from "@/hooks/use-realtime-dashboard";
 
 const AnimatedSection = ({ children, delay = 0, className = "", sectionRef }: { children: React.ReactNode; delay?: number; className?: string; sectionRef?: React.Ref<HTMLElement> }) => (
   <section

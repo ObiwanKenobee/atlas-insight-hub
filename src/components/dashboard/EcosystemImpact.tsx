@@ -1,7 +1,8 @@
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, AreaChart, Area } from "recharts";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { TreePine, Wind, Leaf, FileText } from "lucide-react";
 import DrillDownPanel from "./DrillDownPanel";
 import { useAnimatedNumber, useLiveData } from "@/hooks/use-animated-number";
+import { useEcosystemIntegrations } from "@/hooks/use-dashboard-data";
 
 const impactData = [
   { month: "Sep", hectares: 12400, carbon: 3200, projects: 18, reports: 42 },
@@ -12,7 +13,7 @@ const impactData = [
   { month: "Feb", hectares: 31200, carbon: 8100, projects: 54, reports: 112 },
 ];
 
-const regionData = [
+const fallbackRegionData = [
   { region: "Amazon Basin", hectares: 8400, carbon: 2100 },
   { region: "Congo Rainforest", hectares: 6200, carbon: 1800 },
   { region: "Southeast Asia", hectares: 5100, carbon: 1400 },
@@ -21,8 +22,19 @@ const regionData = [
 ];
 
 const EcosystemImpact = () => {
+  const { data: dbIntegrations } = useEcosystemIntegrations();
   const liveHectares = useLiveData(31200, (prev) => prev + Math.round(Math.random() * 100), 6000);
   const animHectares = useAnimatedNumber(liveHectares, 1000);
+
+  const regionData = dbIntegrations?.length
+    ? dbIntegrations.map((i) => ({
+        region: i.integration_name,
+        hectares: Math.round(Number(i.connected_pct) * 100),
+        carbon: Math.round(Number(i.connected_pct) * 25),
+      }))
+    : fallbackRegionData;
+
+  const maxHectares = Math.max(...regionData.map(r => r.hectares));
 
   const impactMetrics = [
     { label: "Hectares Analyzed", value: `${(animHectares / 1000).toFixed(1)}K`, icon: TreePine, color: "hsl(160, 60%, 45%)" },
@@ -42,7 +54,7 @@ const EcosystemImpact = () => {
               <div key={r.region} className="flex items-center gap-3">
                 <span className="text-xs text-secondary-foreground w-32 truncate">{r.region}</span>
                 <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${(r.hectares / 8400) * 100}%` }} />
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${(r.hectares / maxHectares) * 100}%` }} />
                 </div>
                 <span className="text-[10px] font-mono text-muted-foreground w-20 text-right">{(r.hectares / 1000).toFixed(1)}K ha</span>
               </div>

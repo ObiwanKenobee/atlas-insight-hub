@@ -1,14 +1,18 @@
 import { CheckCircle2, Clock, AlertTriangle, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import DrillDownPanel from "./DrillDownPanel";
+import { useWorkflowSteps } from "@/hooks/use-dashboard-data";
 
-const workflows = [
+const fallbackWorkflows = [
   { stage: "Project Created", completion: 96, avgTime: "2 min", status: "healthy" as const, abandonRate: 4, bottleneck: "None", suggestions: "Optimal" },
   { stage: "Data Sources Connected", completion: 81, avgTime: "14 min", status: "healthy" as const, abandonRate: 15, bottleneck: "API key setup", suggestions: "Add OAuth flow" },
   { stage: "Metrics Calculated", completion: 68, avgTime: "42 min", status: "warning" as const, abandonRate: 13, bottleneck: "Processing time", suggestions: "Add progress indicator" },
   { stage: "Verification Executed", completion: 54, avgTime: "1.2 hr", status: "warning" as const, abandonRate: 14, bottleneck: "Manual review", suggestions: "Auto-verify threshold" },
   { stage: "Impact Report Generated", completion: 41, avgTime: "2.1 hr", status: "critical" as const, abandonRate: 13, bottleneck: "Template selection", suggestions: "Default template" },
 ];
+
+const getStatus = (pct: number): "healthy" | "warning" | "critical" =>
+  pct >= 80 ? "healthy" : pct >= 50 ? "warning" : "critical";
 
 const statusIcons = {
   healthy: <CheckCircle2 className="h-3.5 w-3.5 text-primary" />,
@@ -17,7 +21,21 @@ const statusIcons = {
 };
 
 const WorkflowTracker = () => {
+  const { data: dbSteps } = useWorkflowSteps();
   const [selectedStep, setSelectedStep] = useState<number | null>(null);
+
+  const workflows = dbSteps?.length
+    ? dbSteps.map((s) => ({
+        stage: s.step_name,
+        completion: Number(s.completion_pct),
+        avgTime: s.avg_time ?? "N/A",
+        status: getStatus(Number(s.completion_pct)),
+        abandonRate: Math.round(100 - Number(s.completion_pct)),
+        bottleneck: s.status === "pending" ? "Awaiting action" : "In progress",
+        suggestions: s.status === "completed" ? "Optimal" : "Needs attention",
+      }))
+    : fallbackWorkflows;
+
   const step = selectedStep !== null ? workflows[selectedStep] : null;
 
   return (

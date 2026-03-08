@@ -1,14 +1,21 @@
 import { useState } from "react";
-import { MessageSquare, Lightbulb, HeadphonesIcon, Plug, ExternalLink } from "lucide-react";
+import { MessageSquare, Lightbulb, HeadphonesIcon, Plug } from "lucide-react";
 import DrillDownPanel from "./DrillDownPanel";
+import { useFeedbackItems } from "@/hooks/use-dashboard-data";
 
-const feedbackItems = [
-  { type: "feedback" as const, icon: MessageSquare, title: "Verification workflow needs batch mode", source: "User Survey", time: "2h ago", sentiment: "neutral" as const, detail: "12 users have requested batch verification for large datasets. Currently, each asset must be verified individually which is time-consuming for enterprise clients." },
-  { type: "request" as const, icon: Lightbulb, title: "API endpoint for automated reporting", source: "Enterprise Client", time: "5h ago", sentiment: "positive" as const, detail: "Acme Corp needs REST API access to generate impact reports programmatically for their quarterly ESG filings." },
-  { type: "support" as const, icon: HeadphonesIcon, title: "Data import failing for GeoTIFF format", source: "Support Ticket #4821", time: "8h ago", sentiment: "negative" as const, detail: "GeoTIFF files above 2GB timeout during upload. Affects 8% of enterprise users with satellite imagery datasets." },
-  { type: "integration" as const, icon: Plug, title: "Sentinel-2 connector timeout on large regions", source: "Integration Monitor", time: "12h ago", sentiment: "negative" as const, detail: "Region queries exceeding 50,000 km² cause timeouts. Needs pagination or chunked download implementation." },
-  { type: "feedback" as const, icon: MessageSquare, title: "Policy simulation results are incredibly useful", source: "NPS Response", time: "1d ago", sentiment: "positive" as const, detail: "Score: 9/10. 'The simulation engine has become our primary tool for policy impact assessment. Team uses it weekly.'" },
+const fallbackItems = [
+  { type: "feedback" as const, icon: MessageSquare, title: "Verification workflow needs batch mode", source: "User Survey", time: "2h ago", sentiment: "neutral" as const, detail: "12 users have requested batch verification for large datasets." },
+  { type: "request" as const, icon: Lightbulb, title: "API endpoint for automated reporting", source: "Enterprise Client", time: "5h ago", sentiment: "positive" as const, detail: "Acme Corp needs REST API access for quarterly ESG filings." },
+  { type: "support" as const, icon: HeadphonesIcon, title: "Data import failing for GeoTIFF format", source: "Support Ticket #4821", time: "8h ago", sentiment: "negative" as const, detail: "GeoTIFF files above 2GB timeout during upload." },
+  { type: "integration" as const, icon: Plug, title: "Sentinel-2 connector timeout on large regions", source: "Integration Monitor", time: "12h ago", sentiment: "negative" as const, detail: "Region queries exceeding 50,000 km² cause timeouts." },
+  { type: "feedback" as const, icon: MessageSquare, title: "Policy simulation results are incredibly useful", source: "NPS Response", time: "1d ago", sentiment: "positive" as const, detail: "Score: 9/10. 'The simulation engine has become our primary tool.'" },
 ];
+
+const sentimentIcons: Record<string, typeof MessageSquare> = {
+  positive: Lightbulb,
+  neutral: MessageSquare,
+  negative: HeadphonesIcon,
+};
 
 const sentimentColors = {
   positive: "bg-primary/20 text-primary",
@@ -17,7 +24,21 @@ const sentimentColors = {
 };
 
 const FeedbackLoop = () => {
+  const { data: dbFeedback } = useFeedbackItems();
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
+
+  const feedbackItems = dbFeedback?.length
+    ? dbFeedback.map((f) => ({
+        icon: sentimentIcons[f.sentiment ?? "neutral"] ?? MessageSquare,
+        title: f.message.slice(0, 60),
+        source: f.category,
+        time: new Date(f.created_at).toLocaleDateString(),
+        sentiment: (f.sentiment ?? "neutral") as "positive" | "neutral" | "negative",
+        detail: f.message,
+        score: f.score,
+      }))
+    : fallbackItems;
+
   const item = selectedItem !== null ? feedbackItems[selectedItem] : null;
 
   return (

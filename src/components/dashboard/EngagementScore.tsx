@@ -1,8 +1,9 @@
 import DrillDownPanel from "./DrillDownPanel";
 import { useAnimatedNumber, useLiveData } from "@/hooks/use-animated-number";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts";
+import { useEngagementScores } from "@/hooks/use-dashboard-data";
 
-const signals = [
+const fallbackSignals = [
   { label: "Login Frequency", value: 82, fullMark: 100 },
   { label: "Datasets Uploaded", value: 68, fullMark: 100 },
   { label: "Verification Jobs", value: 74, fullMark: 100 },
@@ -10,10 +11,18 @@ const signals = [
   { label: "Reports Generated", value: 79, fullMark: 100 },
 ];
 
-const radarData = signals.map(s => ({ subject: s.label.split(" ")[0], A: s.value }));
-
 const EngagementScore = () => {
-  const liveScore = useLiveData(73, (prev) => Math.min(100, Math.max(40, prev + Math.round((Math.random() - 0.45) * 2))), 5000);
+  const { data: dbScores } = useEngagementScores();
+
+  const signals = dbScores?.length
+    ? dbScores.map((s) => ({ label: s.metric_name, value: s.score, fullMark: 100 }))
+    : fallbackSignals;
+
+  const overallScore = dbScores?.[0]?.overall_score ?? 73;
+
+  const radarData = signals.map(s => ({ subject: s.label.split(" ")[0], A: s.value }));
+
+  const liveScore = useLiveData(overallScore, (prev) => Math.min(100, Math.max(40, prev + Math.round((Math.random() - 0.45) * 2))), 5000);
   const animatedScore = useAnimatedNumber(liveScore);
   const maxScore = 100;
   const circumference = Math.PI * 80;

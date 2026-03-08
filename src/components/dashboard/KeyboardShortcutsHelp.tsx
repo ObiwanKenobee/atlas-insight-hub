@@ -1,5 +1,5 @@
 import { Keyboard } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const shortcuts = [
   { keys: ["⌘/Ctrl", "K"], label: "Toggle filters" },
@@ -11,9 +11,8 @@ const shortcuts = [
 const KeyboardShortcutsHelp = () => {
   const [open, setOpen] = useState(false);
 
-  // Listen for "?" key
-  if (typeof window !== "undefined") {
-    window.addEventListener("keydown", (e) => {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
       if (
         e.key === "?" &&
         !(e.target instanceof HTMLInputElement) &&
@@ -21,14 +20,16 @@ const KeyboardShortcutsHelp = () => {
       ) {
         setOpen((prev) => !prev);
       }
-    });
-  }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm" onClick={() => setOpen(false)}>
-      <div className="bg-card border border-border rounded-xl p-6 shadow-xl max-w-sm w-full mx-4" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-card border border-border rounded-xl p-6 shadow-xl max-w-sm w-full mx-4 animate-scale-in" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2 mb-4">
           <Keyboard className="h-4 w-4 text-primary" />
           <h2 className="text-sm font-semibold text-foreground font-mono">KEYBOARD SHORTCUTS</h2>

@@ -1,7 +1,8 @@
-import { Activity, Bell, Settings, Filter, Menu, X } from "lucide-react";
+import { Activity, Bell, Settings, Filter, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "@/hooks/use-auth";
 
 interface DashboardHeaderProps {
   onToggleFilters?: () => void;

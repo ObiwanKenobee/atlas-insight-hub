@@ -46,6 +46,13 @@ const DashboardHeader = ({ onToggleFilters }: DashboardHeaderProps) => {
         <button className="p-2 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
           <Settings className="h-4 w-4" />
         </button>
+        <button
+          onClick={signOut}
+          className="p-2 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+          title={`Sign out (${user?.email})`}
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Mobile actions */}

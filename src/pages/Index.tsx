@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ActivationPanel from "@/components/dashboard/ActivationPanel";
 import FeatureAdoptionMap from "@/components/dashboard/FeatureAdoptionMap";
@@ -9,9 +9,12 @@ import DataActivityMonitor from "@/components/dashboard/DataActivityMonitor";
 import EcosystemImpact from "@/components/dashboard/EcosystemImpact";
 import FeedbackLoop from "@/components/dashboard/FeedbackLoop";
 import FilterSidebar, { DashboardFilters } from "@/components/dashboard/FilterSidebar";
+import KeyboardShortcutsHelp from "@/components/dashboard/KeyboardShortcutsHelp";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
-const AnimatedSection = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
+const AnimatedSection = ({ children, delay = 0, className = "", sectionRef }: { children: React.ReactNode; delay?: number; className?: string; sectionRef?: React.Ref<HTMLElement> }) => (
   <section
+    ref={sectionRef}
     className={`animate-fade-in-up opacity-0 ${className}`}
     style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
   >
@@ -25,6 +28,26 @@ const Index = () => {
     dateRange: "Last 30 days",
     segment: "All Users",
     featureCategory: "All Features",
+  });
+
+  const sectionRefs = useRef<(HTMLElement | null)[]>([null, null, null, null]);
+
+  const setSectionRef = (index: number) => (el: HTMLElement | null) => {
+    sectionRefs.current[index] = el;
+  };
+
+  const toggleTheme = useCallback(() => {
+    document.documentElement.classList.toggle("light");
+  }, []);
+
+  const scrollToSection = useCallback((index: number) => {
+    sectionRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  useKeyboardShortcuts({
+    onToggleFilters: () => setFiltersOpen((prev) => !prev),
+    onToggleTheme: toggleTheme,
+    onScrollToSection: scrollToSection,
   });
 
   return (
@@ -50,24 +73,24 @@ const Index = () => {
       )}
 
       <main className="p-3 sm:p-6 max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
-        <AnimatedSection delay={100} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <AnimatedSection delay={100} sectionRef={setSectionRef(0)} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2">
             <ActivationPanel />
           </div>
           <EngagementScore />
         </AnimatedSection>
 
-        <AnimatedSection delay={250} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <AnimatedSection delay={250} sectionRef={setSectionRef(1)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <FeatureAdoptionMap />
           <WorkflowTracker />
         </AnimatedSection>
 
-        <AnimatedSection delay={400} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <AnimatedSection delay={400} sectionRef={setSectionRef(2)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <DataActivityMonitor />
           <CohortAnalysis />
         </AnimatedSection>
 
-        <AnimatedSection delay={550} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <AnimatedSection delay={550} sectionRef={setSectionRef(3)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <EcosystemImpact />
           <FeedbackLoop />
         </AnimatedSection>
@@ -79,6 +102,8 @@ const Index = () => {
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
       />
+
+      <KeyboardShortcutsHelp />
     </div>
   );
 };

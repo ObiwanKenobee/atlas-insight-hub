@@ -14,7 +14,237 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activation_rate: {
+        Row: {
+          id: string
+          rate: number
+          recorded_at: string
+          week_label: string
+        }
+        Insert: {
+          id?: string
+          rate?: number
+          recorded_at?: string
+          week_label: string
+        }
+        Update: {
+          id?: string
+          rate?: number
+          recorded_at?: string
+          week_label?: string
+        }
+        Relationships: []
+      }
+      activation_steps: {
+        Row: {
+          id: string
+          label: string
+          percentage: number
+          recorded_at: string
+          step_number: number
+          total_users: number
+        }
+        Insert: {
+          id?: string
+          label: string
+          percentage?: number
+          recorded_at?: string
+          step_number: number
+          total_users?: number
+        }
+        Update: {
+          id?: string
+          label?: string
+          percentage?: number
+          recorded_at?: string
+          step_number?: number
+          total_users?: number
+        }
+        Relationships: []
+      }
+      cohort_retention: {
+        Row: {
+          cohort_label: string
+          id: string
+          recorded_at: string
+          week_1: number | null
+          week_2: number | null
+          week_4: number | null
+          week_8: number | null
+        }
+        Insert: {
+          cohort_label: string
+          id?: string
+          recorded_at?: string
+          week_1?: number | null
+          week_2?: number | null
+          week_4?: number | null
+          week_8?: number | null
+        }
+        Update: {
+          cohort_label?: string
+          id?: string
+          recorded_at?: string
+          week_1?: number | null
+          week_2?: number | null
+          week_4?: number | null
+          week_8?: number | null
+        }
+        Relationships: []
+      }
+      data_activity: {
+        Row: {
+          count: number
+          event_type: string
+          hour: number
+          id: string
+          recorded_at: string
+        }
+        Insert: {
+          count?: number
+          event_type: string
+          hour: number
+          id?: string
+          recorded_at?: string
+        }
+        Update: {
+          count?: number
+          event_type?: string
+          hour?: number
+          id?: string
+          recorded_at?: string
+        }
+        Relationships: []
+      }
+      ecosystem_integrations: {
+        Row: {
+          connected_pct: number
+          id: string
+          integration_name: string
+          recorded_at: string
+          status: string | null
+        }
+        Insert: {
+          connected_pct?: number
+          id?: string
+          integration_name: string
+          recorded_at?: string
+          status?: string | null
+        }
+        Update: {
+          connected_pct?: number
+          id?: string
+          integration_name?: string
+          recorded_at?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
+      engagement_scores: {
+        Row: {
+          id: string
+          metric_name: string
+          overall_score: number
+          recorded_at: string
+          score: number
+        }
+        Insert: {
+          id?: string
+          metric_name: string
+          overall_score?: number
+          recorded_at?: string
+          score?: number
+        }
+        Update: {
+          id?: string
+          metric_name?: string
+          overall_score?: number
+          recorded_at?: string
+          score?: number
+        }
+        Relationships: []
+      }
+      feature_adoption: {
+        Row: {
+          adoption_pct: number
+          category: string
+          feature_name: string
+          id: string
+          recorded_at: string
+          trend: string | null
+        }
+        Insert: {
+          adoption_pct?: number
+          category?: string
+          feature_name: string
+          id?: string
+          recorded_at?: string
+          trend?: string | null
+        }
+        Update: {
+          adoption_pct?: number
+          category?: string
+          feature_name?: string
+          id?: string
+          recorded_at?: string
+          trend?: string | null
+        }
+        Relationships: []
+      }
+      feedback_items: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          message: string
+          score: number | null
+          sentiment: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          message: string
+          score?: number | null
+          sentiment?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          score?: number | null
+          sentiment?: string | null
+        }
+        Relationships: []
+      }
+      workflow_steps: {
+        Row: {
+          avg_time: string | null
+          completion_pct: number
+          id: string
+          recorded_at: string
+          status: string | null
+          step_name: string
+        }
+        Insert: {
+          avg_time?: string | null
+          completion_pct?: number
+          id?: string
+          recorded_at?: string
+          status?: string | null
+          step_name: string
+        }
+        Update: {
+          avg_time?: string | null
+          completion_pct?: number
+          id?: string
+          recorded_at?: string
+          status?: string | null
+          step_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

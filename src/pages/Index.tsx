@@ -24,6 +24,7 @@ const AnimatedSection = ({ children, delay = 0, className = "", sectionRef }: { 
 );
 
 const Index = () => {
+  useRealtimeDashboard();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<DashboardFilters>({
     dateRange: "Last 30 days",

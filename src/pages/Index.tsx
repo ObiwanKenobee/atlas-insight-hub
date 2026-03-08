@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ActivationPanel from "@/components/dashboard/ActivationPanel";
 import FeatureAdoptionMap from "@/components/dashboard/FeatureAdoptionMap";
@@ -9,23 +9,8 @@ import DataActivityMonitor from "@/components/dashboard/DataActivityMonitor";
 import EcosystemImpact from "@/components/dashboard/EcosystemImpact";
 import FeedbackLoop from "@/components/dashboard/FeedbackLoop";
 import FilterSidebar, { DashboardFilters } from "@/components/dashboard/FilterSidebar";
-
-const AnimatedSection = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
-  <section
-    className={`animate-fade-in-up opacity-0 ${className}`}
-    style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
-  >
-    {children}
-  </section>
-);
-
-const Index = () => {
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [filters, setFilters] = useState<DashboardFilters>({
-    dateRange: "Last 30 days",
-    segment: "All Users",
-    featureCategory: "All Features",
-  });
+import KeyboardShortcutsHelp from "@/components/dashboard/KeyboardShortcutsHelp";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
   return (
     <div className="min-h-screen bg-background">

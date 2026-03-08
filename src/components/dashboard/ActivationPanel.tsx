@@ -1,21 +1,16 @@
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Users, ArrowRight } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import DrillDownPanel from "./DrillDownPanel";
 import { useAnimatedNumber, useLiveData } from "@/hooks/use-animated-number";
+import { useActivationSteps, useActivationRate } from "@/hooks/use-dashboard-data";
 
-const weeklyData = [
-  { week: "W1", rate: 42 },
-  { week: "W2", rate: 45 },
-  { week: "W3", rate: 48 },
-  { week: "W4", rate: 51 },
-  { week: "W5", rate: 55 },
-  { week: "W6", rate: 58 },
-  { week: "W7", rate: 62 },
-  { week: "W8", rate: 67 },
+const fallbackWeekly = [
+  { week: "W1", rate: 42 }, { week: "W2", rate: 45 }, { week: "W3", rate: 48 }, { week: "W4", rate: 51 },
+  { week: "W5", rate: 55 }, { week: "W6", rate: 58 }, { week: "W7", rate: 62 }, { week: "W8", rate: 67 },
 ];
 
-const initialFunnel = [
+const fallbackFunnel = [
   { label: "Account Created", count: 2480, pct: 100 },
   { label: "Data Source Connected", count: 1860, pct: 75 },
   { label: "First Dataset Uploaded", count: 1364, pct: 55 },
@@ -31,7 +26,19 @@ const drilldownData = [
 ];
 
 const ActivationPanel = () => {
-  const activationRate = useLiveData(67, (prev) => Math.min(99, Math.max(50, prev + Math.round((Math.random() - 0.45) * 3))), 4000);
+  const { data: dbSteps } = useActivationSteps();
+  const { data: dbRate } = useActivationRate();
+
+  const weeklyData = dbRate?.length
+    ? dbRate.map((r) => ({ week: r.week_label, rate: Number(r.rate) }))
+    : fallbackWeekly;
+
+  const funnel = dbSteps?.length
+    ? dbSteps.map((s) => ({ label: s.label, count: s.total_users, pct: Number(s.percentage) }))
+    : fallbackFunnel;
+
+  const currentRate = weeklyData[weeklyData.length - 1]?.rate ?? 67;
+  const activationRate = useLiveData(currentRate, (prev) => Math.min(99, Math.max(50, prev + Math.round((Math.random() - 0.45) * 3))), 4000);
   const animatedRate = useAnimatedNumber(activationRate);
 
   return (
@@ -96,7 +103,7 @@ const ActivationPanel = () => {
       <div>
         <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-3">Activation Funnel</p>
         <div className="space-y-2">
-          {initialFunnel.map((step, i) => (
+          {funnel.map((step, i) => (
             <div key={step.label} className="flex items-center gap-3">
               <div className="w-5 text-right text-xs font-mono text-muted-foreground">{i + 1}</div>
               <div className="flex-1">

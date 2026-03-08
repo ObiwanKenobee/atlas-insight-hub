@@ -8,6 +8,10 @@ import WorkflowTracker from "@/components/dashboard/WorkflowTracker";
 import DataActivityMonitor from "@/components/dashboard/DataActivityMonitor";
 import EcosystemImpact from "@/components/dashboard/EcosystemImpact";
 import FeedbackLoop from "@/components/dashboard/FeedbackLoop";
+import AIInsightsFeed from "@/components/dashboard/AIInsightsFeed";
+import AlertsNotifications from "@/components/dashboard/AlertsNotifications";
+import InteractiveMap from "@/components/dashboard/InteractiveMap";
+import CollaborativeAnnotations from "@/components/dashboard/CollaborativeAnnotations";
 import FilterSidebar, { DashboardFilters } from "@/components/dashboard/FilterSidebar";
 import KeyboardShortcutsHelp from "@/components/dashboard/KeyboardShortcutsHelp";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
@@ -32,7 +36,7 @@ const Index = () => {
     featureCategory: "All Features",
   });
 
-  const sectionRefs = useRef<(HTMLElement | null)[]>([null, null, null, null]);
+  const sectionRefs = useRef<(HTMLElement | null)[]>([null, null, null, null, null, null]);
 
   const setSectionRef = (index: number) => (el: HTMLElement | null) => {
     sectionRefs.current[index] = el;
@@ -75,26 +79,39 @@ const Index = () => {
       )}
 
       <main className="p-3 sm:p-6 max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
-        <AnimatedSection delay={100} sectionRef={setSectionRef(0)} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* AI Insights + Alerts row */}
+        <AnimatedSection delay={50} sectionRef={setSectionRef(0)} className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <AIInsightsFeed />
+          <AlertsNotifications />
+        </AnimatedSection>
+
+        <AnimatedSection delay={150} sectionRef={setSectionRef(1)} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2">
             <ActivationPanel />
           </div>
           <EngagementScore />
         </AnimatedSection>
 
-        <AnimatedSection delay={250} sectionRef={setSectionRef(1)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        {/* Interactive Map + Feature Adoption */}
+        <AnimatedSection delay={300} sectionRef={setSectionRef(2)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <InteractiveMap />
           <FeatureAdoptionMap />
+        </AnimatedSection>
+
+        <AnimatedSection delay={400} sectionRef={setSectionRef(3)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <WorkflowTracker />
-        </AnimatedSection>
-
-        <AnimatedSection delay={400} sectionRef={setSectionRef(2)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <DataActivityMonitor />
-          <CohortAnalysis />
         </AnimatedSection>
 
-        <AnimatedSection delay={550} sectionRef={setSectionRef(3)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <AnimatedSection delay={500} sectionRef={setSectionRef(4)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <CohortAnalysis />
           <EcosystemImpact />
+        </AnimatedSection>
+
+        {/* Feedback + Annotations */}
+        <AnimatedSection delay={600} sectionRef={setSectionRef(5)} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <FeedbackLoop />
+          <CollaborativeAnnotations />
         </AnimatedSection>
       </main>
 

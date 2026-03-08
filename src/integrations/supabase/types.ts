@@ -62,6 +62,107 @@ export type Database = {
         }
         Relationships: []
       }
+      alert_history: {
+        Row: {
+          alert_id: string
+          created_at: string
+          id: string
+          message: string
+          metric_name: string
+          metric_value: number
+          read: boolean
+          threshold_value: number
+          user_id: string
+        }
+        Insert: {
+          alert_id: string
+          created_at?: string
+          id?: string
+          message: string
+          metric_name: string
+          metric_value: number
+          read?: boolean
+          threshold_value: number
+          user_id: string
+        }
+        Update: {
+          alert_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          metric_name?: string
+          metric_value?: number
+          read?: boolean
+          threshold_value?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_history_alert_id_fkey"
+            columns: ["alert_id"]
+            isOneToOne: false
+            referencedRelation: "alerts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      alerts: {
+        Row: {
+          condition: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          metric_name: string
+          threshold_value: number
+          user_id: string
+        }
+        Insert: {
+          condition?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          metric_name: string
+          threshold_value: number
+          user_id: string
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          metric_name?: string
+          threshold_value?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      annotations: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          metric_key: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          metric_key: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          metric_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cohort_retention: {
         Row: {
           cohort_label: string

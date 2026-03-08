@@ -1,6 +1,8 @@
 import { useState } from "react";
+import DrillDownPanel from "./DrillDownPanel";
+import { useCohortRetention } from "@/hooks/use-dashboard-data";
 
-const cohorts = [
+const fallbackCohorts = [
   { month: "Sep 2025", data: [100, 82, 71, 64, 58, 52], users: 340 },
   { month: "Oct 2025", data: [100, 85, 74, 68, 61], users: 412 },
   { month: "Nov 2025", data: [100, 88, 78, 72], users: 389 },
@@ -14,11 +16,20 @@ const getColor = (value: number) => {
   return `hsl(160, 60%, 45%, ${intensity * 0.7 + 0.05})`;
 };
 
-import DrillDownPanel from "./DrillDownPanel";
-
 const CohortAnalysis = () => {
-  const maxCols = Math.max(...cohorts.map(c => c.data.length));
+  const { data: dbCohorts } = useCohortRetention();
   const [selectedCohort, setSelectedCohort] = useState<number | null>(null);
+
+  const cohorts = dbCohorts?.length
+    ? dbCohorts.map((c) => {
+        const data = [100, c.week_1, c.week_2, c.week_4, c.week_8]
+          .filter((v): v is number => v !== null)
+          .map(Number);
+        return { month: c.cohort_label, data, users: Math.round(data[0] * 3.4) };
+      })
+    : fallbackCohorts;
+
+  const maxCols = Math.max(...cohorts.map(c => c.data.length));
   const cohort = selectedCohort !== null ? cohorts[selectedCohort] : null;
 
   return (

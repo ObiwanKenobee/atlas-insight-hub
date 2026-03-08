@@ -1,7 +1,8 @@
-import { Activity, Bell, Settings, Filter, Menu, X } from "lucide-react";
+import { Activity, Bell, Settings, Filter, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "@/hooks/use-auth";
 
 interface DashboardHeaderProps {
   onToggleFilters?: () => void;
@@ -10,6 +11,7 @@ interface DashboardHeaderProps {
 const DashboardHeader = ({ onToggleFilters }: DashboardHeaderProps) => {
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
@@ -44,6 +46,13 @@ const DashboardHeader = ({ onToggleFilters }: DashboardHeaderProps) => {
         <button className="p-2 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
           <Settings className="h-4 w-4" />
         </button>
+        <button
+          onClick={signOut}
+          className="p-2 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+          title={`Sign out (${user?.email})`}
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Mobile actions */}
@@ -74,6 +83,12 @@ const DashboardHeader = ({ onToggleFilters }: DashboardHeaderProps) => {
           </button>
           <button className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
             <Settings className="h-3.5 w-3.5" /> Settings
+          </button>
+          <button
+            onClick={() => { signOut(); setMobileMenuOpen(false); }}
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5" /> Sign Out
           </button>
         </div>
       )}

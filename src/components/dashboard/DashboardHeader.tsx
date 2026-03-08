@@ -11,6 +11,7 @@ interface DashboardHeaderProps {
 const DashboardHeader = ({ onToggleFilters }: DashboardHeaderProps) => {
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">

@@ -59,6 +59,21 @@ export function useRealtimeDashboard() {
         { event: "*", schema: "public", table: "feedback_items" },
         () => queryClient.invalidateQueries({ queryKey: ["feedback_items"] })
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "alert_history" },
+        () => queryClient.invalidateQueries({ queryKey: ["alert_history"] })
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "alerts" },
+        () => queryClient.invalidateQueries({ queryKey: ["alerts"] })
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "annotations" },
+        () => queryClient.invalidateQueries({ queryKey: ["annotations"] })
+      )
       .subscribe();
 
     return () => {
